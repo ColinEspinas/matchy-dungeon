@@ -10,8 +10,8 @@ class Ball(Entity):
   collision = None
 
   def setup(self, options) -> None:
-    # if options:
-      # if 'position' in options: self.transform.position = options['position']
+    if options:
+      if 'position' in options: self.transform.position = options['position']
     self.collision = pygame.Rect(
       self.transform.position.x - self.radius / 2,
       self.transform.position.y - self.radius / 2,

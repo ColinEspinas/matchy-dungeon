@@ -1,10 +1,12 @@
 from core.component import Component
-from utils.vector import Vector
+from pygame import Vector2
 
 class Transform(Component):
 
-  position = Vector(0, 0)
-  velocity = Vector(0, 0)
+  def __init__(self, entity, options = {}) -> None:
+    self.position = Vector2(0, 0)
+    self.velocity = Vector2(0, 0)
+    super().__init__(entity, options)
 
   def setup(self, options) -> None:
     if options:
@@ -12,5 +14,4 @@ class Transform(Component):
       if 'velocity' in options: self.velocity = options['velocity']
 
   def update(self) -> None:
-    self.position.x += self.velocity.x
-    self.position.y += self.velocity.y
+    self.position.xy += self.velocity.xy

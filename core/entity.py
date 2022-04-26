@@ -10,7 +10,7 @@ if TYPE_CHECKING:
   from core.component import Component
 
 class Entity:
-  def __init__(self, game: Game, options: Dict) -> None:
+  def __init__(self, game: Game, options = {}) -> None:
     self.id = uuid.uuid4()
     self.game = game
     self.components: Dict[str, Component] = {
