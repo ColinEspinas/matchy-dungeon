@@ -17,16 +17,15 @@ class Player(Entity):
   }
 
   def setup(self, options) -> None:
-    if options:
-      if 'position' in options: self.transform.position = options['position']
-      if 'keys' in options: self.keys = options['keys']
     self.size = Vector2(40, 40)
     self.grid = self.game.entities['grid']
     self.targetCellIndex = 0
     self.targetCell = self.grid.cells[self.targetCellIndex]
     self.transform.position = self.targetCell.transform.position
     self.target = self.transform.position
-    self.animationValue = 0
+    if options:
+      if 'position' in options: self.transform.position = options['position']
+      if 'keys' in options: self.keys = options['keys']
 
   def draw(self) -> None:
     radius = self.size.x / 2 - 6
@@ -64,9 +63,6 @@ class Player(Entity):
     )
 
   def update(self, delta) -> None:
-    self.animationValue -= delta * 20
-    if self.animationValue <= 0:
-      self.animationValue = 3
     self.targetCell = self.grid.cells[self.targetCellIndex]
     self.transform.position = self.transform.position.lerp(self.targetCell.transform.position, 0.1)
 
