@@ -9,48 +9,34 @@ from entities.grid import Grid
 
 class Player(Entity):
 
-  size = Vector2(40, 40)
-  speed = 800
   keys = { 
     'up': pygame.K_UP, 
     'down': pygame.K_DOWN,
     'left': pygame.K_LEFT,
     'right': pygame.K_RIGHT,
   }
-  targetCellIndex = 0
-  targetCell: Cell = None
-  grid: Grid = None
 
   def setup(self, options) -> None:
     if options:
       if 'position' in options: self.transform.position = options['position']
       if 'keys' in options: self.keys = options['keys']
+    self.size = Vector2(40, 40)
     self.grid = self.game.entities['grid']
+    self.targetCellIndex = 0
     self.targetCell = self.grid.cells[self.targetCellIndex]
     self.transform.position = self.targetCell.transform.position
     self.target = self.transform.position
     self.animationValue = 0
 
   def draw(self) -> None:
-    # pygame.draw.rect(
-    #   self.game.screen,
-    #   (255, 255, 255),
-    #   (self.transform.position.x, self.transform.position.y, self.size.x, self.size.y),
-    #   2,
-    #   3,
-    # )
     radius = self.size.x / 2 - 6
-
     pygame.draw.circle(
       self.game.screen,
       (255, 255, 255),
       (self.transform.position.x + self.size.x / 2 + self.size.x / 4, self.transform.position.y + self.size.y / 2 - self.size.y / 4),
       radius,
       4,
-      True,
-      False,
-      False,
-      False
+      True, False, False, False
     )
     pygame.draw.circle(
       self.game.screen,
@@ -58,10 +44,7 @@ class Player(Entity):
       (self.transform.position.x + self.size.x / 2 - self.size.x / 4, self.transform.position.y + self.size.y / 2 - self.size.y / 4),
       radius,
       4,
-      False,
-      True,
-      False,
-      False
+      False, True, False, False
     )
     pygame.draw.circle(
       self.game.screen,
@@ -69,10 +52,7 @@ class Player(Entity):
       (self.transform.position.x + self.size.x / 2 - self.size.x / 4, self.transform.position.y + self.size.y / 2 + self.size.y / 4),
       radius,
       4,
-      False,
-      False,
-      True,
-      False
+      False, False, True, False
     )
     pygame.draw.circle(
       self.game.screen,
@@ -80,10 +60,7 @@ class Player(Entity):
       (self.transform.position.x + self.size.x / 2 + self.size.x / 4, self.transform.position.y + self.size.y / 2 + self.size.y / 4),
       radius,
       4,
-      False,
-      False,
-      False,
-      True,
+      False, False, False, True,
     )
 
   def update(self, delta) -> None:
@@ -116,8 +93,3 @@ class Player(Entity):
           currentCellPosition.x + 1,
           currentCellPosition.y,
         ))
-    # if event.type == JOYAXISMOTION:
-    #   if event.axis == 0 :
-    #     self.transform.velocity.x = event.value * 1000
-    #   elif event.axis == 1:
-    #     self.transform.velocity.y = event.value * 1000

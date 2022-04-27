@@ -7,14 +7,12 @@ from entities.cell import Cell, CellType
 
 class Grid(Entity):
 
-  def __init__(self, entity, options = {}) -> None:
+  def setup(self, options) -> None:
     self.size = Vector2(5, 5)
     self.cells = []
     self.margin = 5
     self.cellSize = Vector2(40, 40)
-    super().__init__(entity, options)
 
-  def setup(self, options) -> None:
     self.transform.position.x = self.game.screen.get_width() / 2 - (self.size.x * (self.cellSize.x + self.margin) / 2)
     self.transform.position.y = self.game.screen.get_height() / 2 - (self.size.y * (self.cellSize.y + self.margin) / 2)
     self.generate()
@@ -23,7 +21,8 @@ class Grid(Entity):
     cellTypes = [CellType.EMPTY, CellType.ATTACK, CellType.DEFENSE]
     for row in range(int(self.size.y)):
       for col in range(int(self.size.x)):
-        self.cells.append(self.game.addEntity(f'cell-{row}-{col}', Cell(self.game, { 
+        self.cells.append(self.game.addEntity(f'cell-{row}-{col}', Cell(self.game, {
+          'index': len(self.cells),
           'position': Vector2(
             self.transform.position.x + col * (self.cellSize.x + self.margin), 
             self.transform.position.y + row * (self.cellSize.y + self.margin)
