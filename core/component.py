@@ -17,8 +17,8 @@ class Component:
   def draw(self) -> None:
     pass
 
-  def update(self) -> None:
+  def update(self, delta) -> None:
     pass
 
-  def events(self, event) -> None:
+  def events(self, event, delta) -> None:
     pass

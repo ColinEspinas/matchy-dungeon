@@ -16,28 +16,28 @@ class Entity:
     self.components: Dict[str, Component] = {
       'transform': Transform(self)
     }
-    self.transform = self.components['transform']
+    self.transform: Transform = self.components['transform']
     self.setup(options)
 
   def setup(self, options) -> None:
     pass
 
-  def events(self, event) -> None:
+  def events(self, event, delta) -> None:
     pass
 
-  def update(self) -> None:
+  def update(self, delta) -> None:
     pass
 
   def draw(self) -> None:
     pass
 
-  def eventsComponents(self, event) -> None:
+  def eventsComponents(self, event, delta) -> None:
     for component in self.components.values():
-      component.events(event)
+      component.events(event, delta)
 
-  def updateComponents(self) -> None:
+  def updateComponents(self, delta) -> None:
     for component in self.components.values():
-      component.update()
+      component.update(delta)
 
   def drawComponents(self) -> None:
     for component in self.components.values():

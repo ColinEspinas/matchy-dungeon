@@ -6,7 +6,7 @@ from pygame.math import Vector2
 class Ball(Entity):
 
   radius = 6
-  speed = initialSpeed = 5
+  speed = initialSpeed = 500
   collision = None
 
   def setup(self, options) -> None:
@@ -28,22 +28,15 @@ class Ball(Entity):
       self.radius
     )
 
-  def update(self) -> None:
+  def update(self, delta) -> None:
     self.collision.x = self.transform.position.x - self.radius / 2
     self.collision.y = self.transform.position.y - self.radius / 2
 
     player1 = self.game.entities['player1']
-    player2 = self.game.entities['player2']
 
     if self.collision.colliderect(player1.collision):
       self.transform.velocity.x = self.speed
       self.transform.velocity.y = random.randint(-self.initialSpeed, self.initialSpeed)
-      self.speed += 1
-    
-    if self.collision.colliderect(player2.collision):
-      self.transform.velocity.x = -self.speed
-      self.transform.velocity.y = random.randint(-self.initialSpeed, self.initialSpeed)
-      self.speed += 1
 
     if self.transform.position.y > self.game.screen.get_height() or self.transform.position.y < 0:
       self.transform.velocity.y = -self.transform.velocity.y
@@ -53,5 +46,5 @@ class Ball(Entity):
       randomDir = random.randint(-1, 1) or 1
       self.transform.velocity.x =  randomDir * self.speed
       self.transform.velocity.y = 0
-      self.speed = 5
+      self.speed = self.initialSpeed
     pass

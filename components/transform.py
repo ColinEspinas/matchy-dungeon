@@ -13,5 +13,5 @@ class Transform(Component):
       if 'position' in options: self.position = options['position']
       if 'velocity' in options: self.velocity = options['velocity']
 
-  def update(self) -> None:
-    self.position.xy += self.velocity.xy
+  def update(self, delta) -> None:
+    self.position.xy += self.velocity.xy * delta
