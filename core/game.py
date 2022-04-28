@@ -4,7 +4,7 @@ from pygame.locals import *
 from core.entity import Entity
 
 class Game:
-  def __init__(self, windowOptions = {'title': 'Game', 'size': (400, 400)}, maxFramerate = 60, screenScale = 1) -> None:
+  def __init__(self, windowOptions = {'title': 'Game', 'size': (400, 400)}, maxFramerate = 60, screenScale = 1, layers = ['default']) -> None:
     # Define clock for update loop
     self.timer = pygame.time.Clock()
     # Define general game options
@@ -18,17 +18,27 @@ class Game:
 
     # Declare game entities
     self.entities = {}
+    # Declare layers
+    self.layers = layers
     
   def addEntity(self, name: str, entity: Entity) -> Entity:
     if name not in self.entities:
       self.entities[name] = entity
       return entity
 
+  def removeEntity(self, name: str) -> None:
+    if name in self.entities:
+      self.entities.pop(name)
+  
+  def renameEntity(self, oldName, newName):
+    if oldName in self.entities:
+      self.entities[newName] = self.entities.pop(oldName)
+
   def run(self) -> None:
     pygame.init()
 
-    pygame.joystick.init()
-    joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+    # pygame.joystick.init()
+    # joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
     # Game loop
     while True:
@@ -39,20 +49,22 @@ class Game:
       self.screen.fill((14, 18, 26))
       # Event loop
       for event in pygame.event.get():
-        for entity in self.entities.values():
+        for entity in list(self.entities.values()):
           entity.eventsComponents(event, delta)
           entity.events(event, delta)
         if event.type == QUIT:
           pygame.quit()
           sys.exit()
       # Update loop
-      for entity in self.entities.values():
+      for entity in list(self.entities.values()):
           entity.updateComponents(delta)
           entity.update(delta)
       # Draw loop
-      for entity in self.entities.values():
-          entity.drawComponents()
-          entity.draw()
+      for layer in self.layers:
+        for entity in list(self.entities.values()):
+          if entity.layer == layer:
+            entity.drawComponents()
+            entity.draw()
       # Update pygame
       self.surf.blit(pygame.transform.scale(self.screen, (self.surf.get_size())), (0, 0))
       pygame.display.update()

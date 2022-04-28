@@ -17,6 +17,7 @@ class Entity:
       'transform': Transform(self)
     }
     self.transform: Transform = self.components['transform']
+    self.layer = 'default'
     self.setup(options)
 
   def setup(self, options) -> None:

@@ -4,7 +4,7 @@ from core.game import Game
 from entities.grid import Grid
 from entities.player import Player
 
-game = Game({ 'title': 'Game', 'size': (1000, 600) }, 240)
+game = Game({ 'title': 'Game', 'size': (1000, 600) }, 240, 1, ['default', 'cells', 'player'])
 
 game.addEntity('grid', Grid(game))
 
