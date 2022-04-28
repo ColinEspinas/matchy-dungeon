@@ -4,7 +4,8 @@ from pygame.locals import *
 from pygame.math import Vector2
 
 from core.entity import Entity
-from entities.cell import Cell, CellType
+from entities.cell import Cell
+from utils.cells import cellTypes
 
 class Grid(Entity):
 
@@ -28,7 +29,7 @@ class Grid(Entity):
             self.transform.position.y + row * (self.cellSize.y + self.margin)
           ),
           'size': self.cellSize,
-          'type': Cell.cellTypes[random.randint(0, len(Cell.cellTypes) - 1)],
+          'type': cellTypes[random.randint(0, len(cellTypes) - 1)],
           'grid': self
         })))
 
@@ -121,9 +122,15 @@ class Grid(Entity):
             self.transform.position.y + newCellPos.y * (self.cellSize.y + self.margin)
           ),
           'size': self.cellSize,
-          'type': Cell.cellTypes[random.randint(0, len(Cell.cellTypes) - 1)],
+          'type': cellTypes[random.randint(0, len(cellTypes) - 1)],
           'grid': self
         })
         self.game.entities[f'cell-{int(newCellPos.x)}-{int(newCellPos.y)}'] = newCell
         self.cells[cellIndex] = newCell
 
+  def getCellScreenPosition(self, index):
+    cellPos = self.getPositionFromCellIndex(index)
+    return Vector2(
+      self.transform.position.x + cellPos.x * (self.cellSize.x + self.margin), 
+      self.transform.position.y + cellPos.y * (self.cellSize.y + self.margin)
+    )

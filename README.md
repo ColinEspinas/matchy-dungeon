@@ -25,10 +25,14 @@ When killing an enemy you will get XP. Once per level you will get to increase a
 In the shop you will get the choice to trade items for you acquired gold.
 
 ### Cell types
-| Name    | Type          | Effect                                               |
-|---------|---------------|------------------------------------------------------|
-| Attack  | Player Attack | Attacks the enemy monster for 1                      |
-| Defense | Bonus         | Adds 1 to player shields                             |
-| Bash    | Enemy Attack  | Damage the player for 1                              |
-| Pikes   | Enemy Attack  | When walking on it when out damages the player for 1 |
+| Name    | Type          | Effect                                                      |
+|---------|---------------|-------------------------------------------------------------|
+| Attack  | Player Attack | Attacks the enemy monster for the number of connected tiles |
+| Defense | Bonus         | Adds 1 to player shields                                    |
+| Bash    | Enemy Attack  | Damage the player for the number of connected tiles  |
+| Pikes   | Enemy Attack  | When walking on it damages the player for 1HP        |
 | Gold    | Consumable    | Adds 1 gold to player's purse                        |
+
+## Resources
+
+Thanks https://phosphoricons.com/ for the sprite icons.

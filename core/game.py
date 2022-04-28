@@ -1,5 +1,6 @@
 import sys, pygame
 from pygame.locals import *
+from core.assets import Assets
 
 from core.entity import Entity
 
@@ -16,10 +17,15 @@ class Game:
     # Prepare game screen
     self.screen = pygame.Surface((self.surf.get_width() / screenScale, self.surf.get_height() / screenScale))
 
+    pygame.init()
+    pygame.font.init()
+
     # Declare game entities
     self.entities = {}
     # Declare layers
     self.layers = layers
+    # Load assets
+    self.assets = Assets()
     
   def addEntity(self, name: str, entity: Entity) -> Entity:
     if name not in self.entities:
@@ -35,8 +41,6 @@ class Game:
       self.entities[newName] = self.entities.pop(oldName)
 
   def run(self) -> None:
-    pygame.init()
-
     # pygame.joystick.init()
     # joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
 
