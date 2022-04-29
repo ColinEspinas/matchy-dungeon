@@ -1,3 +1,4 @@
+from math import ceil
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
@@ -54,7 +55,7 @@ class Player(Entity):
       4
     )
     font = self.game.assets.fonts['regular']
-    HealthText = font.render(f'HP={self.health}/{self.maxHealth} + {int(self.shield)}', False, (255, 255, 255))
+    HealthText = font.render(f'HP={self.health}/{self.maxHealth} + {ceil(self.shield)}', False, (255, 255, 255))
     self.game.screen.blit(HealthText, (
       self.grid.transform.position.x,
       self.grid.transform.position.y + self.grid.size.y * (self.grid.cellSize.y + self.grid.margin)
@@ -131,7 +132,12 @@ class Player(Entity):
       self.takeDamage(1)
 
   def takeDamage(self, amount):
-    if self.shield > 0:
-      self.shield = max(0, self.shield - amount)
+    if self.shield < amount:
+      healthToRemove = amount - ceil(self.shield)
+      self.shield = 0
+      self.health = max(0, self.health - healthToRemove)
     else:
-      self.health = max(0, self.health - amount)
+      if self.shield > 0:
+        self.shield = max(0, self.shield - amount)
+      else:
+        self.health = max(0, self.health - amount)
