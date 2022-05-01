@@ -1,37 +1,39 @@
 import random
 from typing import List
+import pygame
 from pygame.locals import *
 from pygame.math import Vector2
 
 from core.entity import Entity
 from entities.cell import Cell
-from utils.cells import cellTypes
+from utils.cells import cellTypes, getRandomCellType
+from components.shaker import Shaker
 
 class Grid(Entity):
 
   def setup(self, options) -> None:
-    self.size = Vector2(5, 6)
+    self.size: Vector2 = Vector2(5, 6)
     self.cells: List[Cell] = []
     self.margin = 5
     self.cellSize = Vector2(40, 40)
+    
+    self.surface = pygame.Surface((
+       self.size.x * (self.cellSize.x + self.margin),
+       self.size.y * (self.cellSize.x + self.margin)
+    ), pygame.SRCALPHA)
+
+    self.shaker = self.components['shaker'] = Shaker(self, { 'surface': self.surface })
+
+    self.layer = 'cells'
 
     self.transform.position.x = self.game.screen.get_width() / 2 - (self.size.x * (self.cellSize.x + self.margin) / 2)
-    self.transform.position.y = self.game.screen.get_height() / 2 - (self.size.y * (self.cellSize.y + self.margin) / 2)
+    self.transform.position.y = self.game.screen.get_height() * 4.5 / 8 - (self.size.y * (self.cellSize.y + self.margin) / 2)
     self.generate()
 
   def generate(self) -> None:
     for row in range(int(self.size.y)):
       for col in range(int(self.size.x)):
-        self.cells.append(self.game.addEntity(f'cell-{col}-{row}', Cell(self.game, {
-          'index': len(self.cells),
-          'position': Vector2(
-            self.transform.position.x + col * (self.cellSize.x + self.margin), 
-            self.transform.position.y + row * (self.cellSize.y + self.margin)
-          ),
-          'size': self.cellSize,
-          'type': cellTypes[random.randint(0, len(cellTypes) - 1)],
-          'grid': self
-        })))
+        self.cells.append(None)
 
   def update(self, delta) -> None:
     for cell in range(len(self.cells)):
@@ -102,8 +104,8 @@ class Grid(Entity):
             self.cells[cellIndexBelow] = cell
             cell.index = cellIndexBelow
             cell.targetPosition = Vector2(
-              self.transform.position.x + cellPosBelow.x * (self.cellSize.x + self.margin), 
-              self.transform.position.y + cellPosBelow.y * (self.cellSize.y + self.margin)
+              cellPosBelow.x * (self.cellSize.x + self.margin), 
+              cellPosBelow.y * (self.cellSize.y + self.margin)
             )
             self.game.renameEntity(f'cell-{int(cellPos.x)}-{int(cellPos.y)}', f'cell-{int(cellPosBelow.x)}-{int(cellPosBelow.y)}')
             self.game.entities['player'].invalidateTargetCellGroup = True
@@ -118,11 +120,11 @@ class Grid(Entity):
         newCell = Cell(self.game, {
           'index': cellIndex,
           'position': Vector2(
-            self.transform.position.x + newCellPos.x * (self.cellSize.x + self.margin), 
-            self.transform.position.y + newCellPos.y * (self.cellSize.y + self.margin)
+            newCellPos.x * (self.cellSize.x + self.margin), 
+            newCellPos.y * (self.cellSize.y + self.margin)
           ),
           'size': self.cellSize,
-          'type': cellTypes[random.randint(0, len(cellTypes) - 1)],
+          'type': getRandomCellType(),
           'grid': self
         })
         self.game.entities[f'cell-{int(newCellPos.x)}-{int(newCellPos.y)}'] = newCell

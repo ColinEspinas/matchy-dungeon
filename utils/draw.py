@@ -1,6 +1,6 @@
 from __future__ import annotations
-from math import sin
 from typing import TYPE_CHECKING
+import numpy
 
 import pygame
 from utils.cells import CellType
@@ -109,3 +109,58 @@ def skull(surface: pygame.Surface, cell: Cell):
   arr.replace((0, 0, 0), cell.getCellColor())
   surf = arr.make_surface()
   surface.blit(surf, (5, 5), None, pygame.BLEND_ALPHA_SDL2)
+
+def healthIcon(surface: pygame.Surface, assets, position, size, color):
+  image = pygame.transform.scale(assets.images['heart'], (size.x, size.y))
+  arr = pygame.PixelArray(image)
+  arr.replace((0, 0, 0), color)
+  surf = arr.make_surface()
+  surface.blit(surf, (position.x, position.y - 1), None, pygame.BLEND_ALPHA_SDL2)
+
+def shieldIcon(surface: pygame.Surface, assets, position, size, color):
+  image = pygame.transform.scale(assets.images['shield'], (size.x, size.y))
+  arr = pygame.PixelArray(image)
+  arr.replace((0, 0, 0), color)
+  surf = arr.make_surface()
+  surface.blit(surf, (position.x, position.y - 2), None, pygame.BLEND_ALPHA_SDL2)
+
+def goldIcon(surface: pygame.Surface, assets, position, size, color):
+  image = pygame.transform.scale(assets.images['coin'], (size.x, size.y))
+  arr = pygame.PixelArray(image)
+  arr.replace((0, 0, 0), color)
+  surf = arr.make_surface()
+  surface.blit(surf, (position.x, position.y), None, pygame.BLEND_ALPHA_SDL2)
+
+def player(surface, assets, position, size):
+  pygame.draw.rect(surface, (0, 232, 252), (
+    position.x,
+    position.y,
+    size.x,
+    size.y
+  ), 4, 6)
+  image = pygame.transform.scale(assets.images['shield'], (size.x - 10, size.y - 10))
+  arr = pygame.PixelArray(image)
+  arr.replace((0, 0, 0), (0, 232, 252))
+  surface.blit(arr.make_surface(), (position.x + 4.5, position.y + 3))
+
+def monster(surface, monster):
+  surface = pygame.Surface((monster.size.x, monster.size.y), pygame.SRCALPHA)
+  if monster.health > 0:
+    if monster.dungeon.currentMonsterIndex == monster.index:
+      pygame.draw.rect(surface, (255, 98, 1), (
+        0, 0,
+        monster.size.x,
+        monster.size.y
+      ), 4, 6)
+      image = pygame.transform.scale(monster.game.assets.images['skull'], (monster.size.x - 10, monster.size.y - 10))
+      arr = pygame.PixelArray(image)
+      arr.replace((0, 0, 0), (255, 98, 1))
+      surface.blit(arr.make_surface(), (5, 5))
+    elif monster.index - monster.dungeon.currentMonsterIndex <= 2:
+      pygame.draw.rect(surface, (255, 98, 1), (
+        0, 0,
+        monster.size.x / 2,
+        monster.size.y / 2
+      ), 4, 6)
+    # monster.game.screen.blit(surface, (monster.transform.position.x, monster.transform.position.y), None, pygame.BLEND_ALPHA_SDL2)
+  return surface

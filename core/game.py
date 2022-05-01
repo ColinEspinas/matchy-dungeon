@@ -33,8 +33,7 @@ class Game:
       return entity
 
   def removeEntity(self, name: str) -> None:
-    if name in self.entities:
-      self.entities.pop(name)
+    self.entities.pop(name)
   
   def renameEntity(self, oldName, newName):
     if oldName in self.entities:

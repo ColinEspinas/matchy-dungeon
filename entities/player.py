@@ -1,10 +1,11 @@
-from math import ceil
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
+from components.combo import Combo
 
 from core.entity import Entity
 from entities.cell import Cell
+from entities.dungeon import Dungeon
 from entities.grid import Grid
 from utils.draw import cursor
 from utils.cells import CellType
@@ -22,14 +23,15 @@ class Player(Entity):
   def setup(self, options) -> None:
     self.size = Vector2(40, 40)
     self.grid: Grid = self.game.entities['grid']
+    self.dungeon: Dungeon = self.game.entities['dungeon']
     
-    self.targetCellIndex = int(self.grid.size.x)
+    self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(self.grid.size.x / 2, self.grid.size.y / 2))
     self.targetCell: Cell = self.grid.cells[self.targetCellIndex]
 
     self.targetCellGroup = self.grid.getCellGroup(self.targetCellIndex, [])
     self.invalidateTargetCellGroup = True
 
-    self.transform.position = self.targetCell.transform.position
+    self.transform.position = self.grid.getCellScreenPosition(self.targetCellIndex)
     self.target = self.transform.position
 
     self.layer = 'player'
@@ -39,6 +41,12 @@ class Player(Entity):
     self.shield = 5
     self.maxShield = 10
     self.gold = 0
+
+    self.flash = 0
+    self.flashSurface = pygame.Surface(self.game.screen.get_size())
+    self.flashColor = (255, 0, 0)
+
+    self.combo = self.components['combo'] = Combo(self)
 
     if options:
       if 'position' in options: self.transform.position = options['position']
@@ -54,25 +62,16 @@ class Player(Entity):
       self.size,
       4
     )
-    font = self.game.assets.fonts['regular']
-    HealthText = font.render(f'HP={self.health}/{self.maxHealth} + {ceil(self.shield)}', False, (255, 255, 255))
-    self.game.screen.blit(HealthText, (
-      self.grid.transform.position.x,
-      self.grid.transform.position.y + self.grid.size.y * (self.grid.cellSize.y + self.grid.margin)
-    ))
-    goldText = font.render(f'GOLD={self.gold}', False, (255, 255, 255))
-    self.game.screen.blit(goldText, (
-      self.grid.transform.position.x,
-      self.grid.transform.position.y + self.grid.size.y * (self.grid.cellSize.y + self.grid.margin) + 30
-    ))
-    fpsText = font.render(f'FPS={int(self.game.timer.get_fps())}', False, (255, 255, 255))
-    self.game.screen.blit(fpsText, (
-      self.grid.transform.position.x,
-      self.grid.transform.position.y + self.grid.size.y * (self.grid.cellSize.y + self.grid.margin) + 60
-    ))
+    if self.flash:
+      self.flashSurface.fill(self.flashColor)
+      self.flashSurface.set_alpha(32)
+      self.game.screen.blit(self.flashSurface, (0, 0))
 
   def update(self, delta) -> None:
-    self.shield = max(0, self.shield - delta / 2)
+    if self.flash > 0:
+      self.flash -= delta
+    else:
+      self.flash = 0
     self.targetCell = self.grid.cells[self.targetCellIndex]
     if self.targetCell:
       self.transform.position = self.transform.position.lerp(self.grid.getCellScreenPosition(self.targetCellIndex), max(min(1, delta * 20), 0))
@@ -110,7 +109,6 @@ class Player(Entity):
         ))
         self.movementAction()
       if event.key == self.keys['action']:
-        # Do an action
         self.action()
       self.invalidateTargetCellGroup = True
 
@@ -119,11 +117,20 @@ class Player(Entity):
       if self.targetCell.type == CellType.BASH:
         self.takeDamage(len(self.targetCellGroup))
       if self.targetCell.type == CellType.DEFENSE:
+        self.setFlash(0.05, (self.targetCell.getCellColor()))
         self.shield = min(self.shield + len(self.targetCellGroup), self.maxShield)
+      if self.targetCell.type == CellType.ATTACK:
+        self.dealDamage(len(self.targetCellGroup))
       if self.targetCell.type == CellType.GOLD:
         self.gold += len(self.targetCellGroup)
       if not self.targetCell.type == CellType.PIKES:
-        # Remove cell
+        if not self.targetCell.type == CellType.EMPTY:
+          if len(self.targetCellGroup) >= 3:
+            self.combo.addToCombo(1)
+          if len(self.targetCellGroup) >= 5:
+            self.combo.addToCombo(1)
+          if len(self.targetCellGroup) >= 10:
+            self.combo.addToCombo(1)
         self.grid.removeCell(self.targetCellIndex)
 
   def movementAction(self):
@@ -132,8 +139,11 @@ class Player(Entity):
       self.takeDamage(1)
 
   def takeDamage(self, amount):
+    self.setFlash()
+    self.grid.shaker.shakeDuration += 0.1
+    self.grid.shaker.shake += max(0.08, 0.02 * amount)
     if self.shield < amount:
-      healthToRemove = amount - ceil(self.shield)
+      healthToRemove = amount - self.shield
       self.shield = 0
       self.health = max(0, self.health - healthToRemove)
     else:
@@ -141,3 +151,14 @@ class Player(Entity):
         self.shield = max(0, self.shield - amount)
       else:
         self.health = max(0, self.health - amount)
+
+  def dealDamage(self, amount):
+    self.setFlash(0.08, (255, 255, 255))
+    monster = self.dungeon.monsters[self.dungeon.currentMonsterIndex]
+    monster.shaker.shakeDuration += 0.1
+    monster.shaker.shake += max(0.08, 0.06 * amount * max(1, self.combo.value))
+    self.dungeon.attackCurrentMonster(amount * max(1, self.combo.value))
+
+  def setFlash(self, duration = 0.1, color = (255, 0, 0)):
+    self.flash = duration
+    self.flashColor = color

@@ -36,7 +36,7 @@ class Cell(Entity):
 
   def draw(self) -> None:
     inPlayerGroup = self.index in self.game.entities['player'].targetCellGroup
-    cell(self.game.screen, self, inPlayerGroup)
+    cell(self.grid.surface, self, inPlayerGroup)
 
   def getCellColor(self):
     colors = {
