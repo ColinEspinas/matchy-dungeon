@@ -49,6 +49,10 @@ What is missing:
 - Shops
 - Coins are useless as there is no shop in game yet (you can still use them for combo).
 
+## Controls
+
+Use the arrow keys to move your cursor and the space bar to make actions.
+
 ## Resources
 
 Thanks https://phosphoricons.com/ for the sprite icons.
