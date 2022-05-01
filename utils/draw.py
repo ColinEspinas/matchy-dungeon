@@ -132,16 +132,16 @@ def goldIcon(surface: pygame.Surface, assets, position, size, color):
   surface.blit(surf, (position.x, position.y), None, pygame.BLEND_ALPHA_SDL2)
 
 def player(surface, assets, position, size):
-  pygame.draw.rect(surface, (0, 232, 252), (
+  pygame.draw.rect(surface, (219, 48, 105), (
     position.x,
     position.y,
     size.x,
     size.y
   ), 4, 6)
-  image = pygame.transform.scale(assets.images['shield'], (size.x - 10, size.y - 10))
+  image = pygame.transform.scale(assets.images['sword'], (size.x - 10, size.y - 10))
   arr = pygame.PixelArray(image)
-  arr.replace((0, 0, 0), (0, 232, 252))
-  surface.blit(arr.make_surface(), (position.x + 4.5, position.y + 3))
+  arr.replace((0, 0, 0), (219, 48, 105))
+  surface.blit(arr.make_surface(), (position.x + 5, position.y + 4))
 
 def monster(surface, monster):
   surface = pygame.Surface((monster.size.x, monster.size.y), pygame.SRCALPHA)
@@ -162,5 +162,27 @@ def monster(surface, monster):
         monster.size.x / 2,
         monster.size.y / 2
       ), 4, 6)
+      surface.set_alpha(200 / (monster.index - monster.dungeon.currentMonsterIndex))
     # monster.game.screen.blit(surface, (monster.transform.position.x, monster.transform.position.y), None, pygame.BLEND_ALPHA_SDL2)
   return surface
+
+def floor(surface, dungeon):
+  centerPos = pygame.Vector2(
+    dungeon.transform.position.x + dungeon.size.x / 2 - 5,
+    dungeon.transform.position.y - 15
+  )
+  surf = pygame.Surface((40, 40), pygame.SRCALPHA)
+  pygame.draw.rect(surf, (44, 47, 58), (0, 0, 40, 40), 4, 6)
+  surf = pygame.transform.rotate(surf, 45)
+
+  font = dungeon.game.assets.fonts['regular']
+  floorText: pygame.Surface = font.render(f'{dungeon.floor}', False, (255, 255, 255))
+  surface.blit(floorText, (
+    centerPos.x - floorText.get_width() / 2 + 1,
+    centerPos.y + surf.get_height() / 2 - floorText.get_height() / 2 + 3
+  ))
+
+  surface.blit(surf, (
+    centerPos.x - surf.get_width() / 2,
+    centerPos.y
+  ))

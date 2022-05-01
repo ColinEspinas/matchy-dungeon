@@ -27,7 +27,7 @@ class Grid(Entity):
     self.layer = 'cells'
 
     self.transform.position.x = self.game.screen.get_width() / 2 - (self.size.x * (self.cellSize.x + self.margin) / 2)
-    self.transform.position.y = self.game.screen.get_height() * 4.5 / 8 - (self.size.y * (self.cellSize.y + self.margin) / 2)
+    self.transform.position.y = self.game.screen.get_height() * 4.7 / 8 - (self.size.y * (self.cellSize.y + self.margin) / 2)
     self.generate()
 
   def generate(self) -> None:
@@ -136,3 +136,7 @@ class Grid(Entity):
       self.transform.position.x + cellPos.x * (self.cellSize.x + self.margin), 
       self.transform.position.y + cellPos.y * (self.cellSize.y + self.margin)
     )
+
+  def resetGrid(self):
+    for cell in range(len(self.cells)):
+      self.removeCell(cell)

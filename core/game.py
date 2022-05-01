@@ -5,7 +5,7 @@ from core.assets import Assets
 from core.entity import Entity
 
 class Game:
-  def __init__(self, windowOptions = {'title': 'Game', 'size': (400, 400)}, maxFramerate = 60, screenScale = 1, layers = ['default']) -> None:
+  def __init__(self, windowOptions = {'title': 'Game', 'size': (400, 400)}, maxFramerate = 60, screenScale = 1, layers = ['default'], states = ['game']) -> None:
     # Define clock for update loop
     self.timer = pygame.time.Clock()
     # Define general game options
@@ -19,7 +19,9 @@ class Game:
 
     pygame.init()
     pygame.font.init()
-
+    # Set states
+    self.states = states
+    self.state = self.states[0]
     # Declare game entities
     self.entities = {}
     # Declare layers

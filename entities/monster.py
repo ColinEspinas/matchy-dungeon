@@ -30,6 +30,7 @@ class Monster(Entity):
     if 'position' in options: self.inCombatPosition = options['position']
     if 'dungeon' in options: self.dungeon = options['dungeon']
     if 'size' in options: self.size = options['size']
+    if 'health' in options: self.maxHealth = self.health = options['health']
 
     self.transform.position = self.getWaitingPosition()
   
@@ -59,12 +60,10 @@ class Monster(Entity):
 
   def takeDamage(self, amount):
     self.health -= amount
-    print(f"Took damage: {amount} (health={self.health})")
     if self.health <= 0:
       self.die()
 
   def die(self):
-    print('Monster dead')
     self.dungeon.killMonster(self.index)
 
   def getWaitingPosition(self):

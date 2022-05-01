@@ -1,3 +1,4 @@
+import random
 import pygame
 from pygame.locals import *
 from pygame.math import Vector2
@@ -5,7 +6,7 @@ from pygame.math import Vector2
 from core.entity import Entity
 from entities.grid import Grid
 from entities.monster import Monster
-from utils.draw import player
+from utils.draw import floor, player
 
 class Dungeon(Entity):
 
@@ -16,14 +17,14 @@ class Dungeon(Entity):
       150
     )
 
-    self.floor = 5
+    self.floor = 0
     self.monsters = []
     self.currentMonsterIndex = 0
 
     self.layer = 'default'
 
     self.transform.position.x = self.game.screen.get_width() / 2 - (self.size.x / 2)
-    self.transform.position.y = 30
+    self.transform.position.y = 50
 
     self.generateFloor()
 
@@ -31,25 +32,24 @@ class Dungeon(Entity):
     self.clearFloor()
     if self.floor == 0:
       self.monsters = [self.generateMonster(0)]
-    elif self.floor < 5:
+    elif abs(self.floor) < 5:
       for i in range(3):
         self.monsters.append(self.generateMonster(i))
-    elif self.floor < 10:
+    elif abs(self.floor) < 10:
       for i in range(5):
         self.monsters.append(self.generateMonster(i))
-    elif self.floor < 20:
+    elif abs(self.floor) < 20:
       for i in range(10):
         self.monsters.append(self.generateMonster(i))
-    elif self.floor < 50:
+    elif abs(self.floor) < 50:
       for i in range(15):
         self.monsters.append(self.generateMonster(i))
-    elif self.floor < 100:
+    elif abs(self.floor) < 100:
       for i in range(25):
         self.monsters.append(self.generateMonster(i))
     else:
       for i in range(50):
         self.monsters.append(self.generateMonster(i))
-    print(f'current floor: {self.floor}', self.monsters)
   
   def generateMonster(self, index):
     return self.game.addEntity(f'monster-{index}', Monster(self.game, {
@@ -59,8 +59,14 @@ class Dungeon(Entity):
         self.transform.position.y + self.size.y / 1.5 - 20
       ),
       'size': Vector2(40, 40),
-      'dungeon': self
+      'dungeon': self,
+      'health': int(10 * max(1, abs(self.floor)) * random.uniform(0.5, 1.5) * (1 + index / 10))
     }))
+
+  def resetDungeon(self):
+    self.floor = 0
+    self.currentMonsterIndex = 0
+    self.generateFloor()
 
   def clearFloor(self):
     for i in range(len(self.monsters)):
@@ -74,7 +80,7 @@ class Dungeon(Entity):
   def killMonster(self, index):
     self.monsters[index] = None
     if self.currentMonsterIndex >= len(self.monsters) - 1:
-      self.floor += 1
+      self.floor -= 1
       self.currentMonsterIndex = 0
       self.generateFloor()
     else:
@@ -91,9 +97,4 @@ class Dungeon(Entity):
       self.transform.position.x + 43,
       self.transform.position.y + self.size.y / 1.5 - 20
       ), Vector2(40, 40))
-    font = self.game.assets.fonts['regular']
-    floorText = font.render(f'floor={self.floor}', False, (255, 255, 255))
-    self.game.screen.blit(floorText, (
-      self.transform.position.x,
-      self.transform.position.y
-    ))
+    floor(self.game.screen, self)

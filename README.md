@@ -42,6 +42,13 @@ In the shop you will get the choice to trade items for you acquired gold.
 | Pikes   | Enemy Attack  | When walking on it damages the player for 1HP               |
 | Gold    | Consumable    | Adds 1 gold to player's purse                               |
 
+## Current state
+
+What is missing:
+- Leveling system
+- Shops
+- Coins are useless as there is no shop in game yet (you can still use them for combo).
+
 ## Resources
 
 Thanks https://phosphoricons.com/ for the sprite icons.

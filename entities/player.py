@@ -83,34 +83,35 @@ class Player(Entity):
 
   def events(self, event, delta) -> None:
     if event.type == KEYDOWN:
-      currentCellPosition = self.grid.getPositionFromCellIndex(self.targetCellIndex)
-      if event.key == self.keys['up'] and currentCellPosition.y > 1:
-        self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
-          currentCellPosition.x,
-          currentCellPosition.y - 1,
-        ))
-        self.movementAction()
-      if event.key == self.keys['down'] and currentCellPosition.y < self.grid.size.y - 1:
-        self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
-          currentCellPosition.x,
-          currentCellPosition.y + 1,
-        ))
-        self.movementAction()
-      if event.key == self.keys['left'] and currentCellPosition.x > 0:
-        self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
-          currentCellPosition.x - 1,
-          currentCellPosition.y,
-        ))
-        self.movementAction()
-      if event.key == self.keys['right'] and currentCellPosition.x < self.grid.size.x - 1:
-        self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
-          currentCellPosition.x + 1,
-          currentCellPosition.y,
-        ))
-        self.movementAction()
-      if event.key == self.keys['action']:
-        self.action()
-      self.invalidateTargetCellGroup = True
+      if self.game.state == 'game':
+        currentCellPosition = self.grid.getPositionFromCellIndex(self.targetCellIndex)
+        if event.key == self.keys['up'] and currentCellPosition.y > 1:
+          self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
+            currentCellPosition.x,
+            currentCellPosition.y - 1,
+          ))
+          self.movementAction()
+        if event.key == self.keys['down'] and currentCellPosition.y < self.grid.size.y - 1:
+          self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
+            currentCellPosition.x,
+            currentCellPosition.y + 1,
+          ))
+          self.movementAction()
+        if event.key == self.keys['left'] and currentCellPosition.x > 0:
+          self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
+            currentCellPosition.x - 1,
+            currentCellPosition.y,
+          ))
+          self.movementAction()
+        if event.key == self.keys['right'] and currentCellPosition.x < self.grid.size.x - 1:
+          self.targetCellIndex = self.grid.getCellIndexFromPosition(Vector2(
+            currentCellPosition.x + 1,
+            currentCellPosition.y,
+          ))
+          self.movementAction()
+        if event.key == self.keys['action']:
+          self.action()
+        self.invalidateTargetCellGroup = True
 
   def action(self):
     if self.targetCell:
@@ -151,6 +152,9 @@ class Player(Entity):
         self.shield = max(0, self.shield - amount)
       else:
         self.health = max(0, self.health - amount)
+    if self.health == 0:
+      self.game.entities['dead-menu'].openMenu()
+      self.game.state = 'dead'
 
   def dealDamage(self, amount):
     self.setFlash(0.08, (255, 255, 255))
